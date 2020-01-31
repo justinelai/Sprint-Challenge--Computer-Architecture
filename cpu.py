@@ -9,9 +9,9 @@ PUSH= 0b01000101
 # Sets PC
 CALL= 0b01010000
 RET = 0b00010001
-JMP = 0b01010100 # Jump to the address stored in the given register. Set the PC to the address stored in the given register.
-JNE = 0b01010110 #If E flag is clear (false, 0), jump to the address stored in the given register.
-JEQ = 0b01010101 #If equal flag is set (true), jump to the address stored in the given register.
+JMP = 0b01010100 
+JNE = 0b01010110
+JEQ = 0b01010101 
 
 #ALU
 ADD = 0b10100000
@@ -172,17 +172,30 @@ class CPU:
         self.register[self.sp] += 1
 
     def jmp(self, operands):
+        # Jump to the address stored in the given register. Set the PC to the address stored in the given register.
+        self.pc = self.register[operands[0]]
     
     def jne(self, operands):
+        #If E flag is clear (false, 0), jump to the address stored in the given register.
+        if (self.fl & 0b00000001) is 0:
+            self.pc = self.register[operands[0]]
+        else:
+            self.pc += 2
 
     def jeq(self, operands):
-    
+        #If equal flag is set (true), jump to the address stored in the given register.
+        if (self.fl & 0b00000001) is 1:
+            self.pc = self.register[operands[0]]
+        else:
+            self.pc += 2
+
     def load(self):
         if len(sys.argv) != 2:
             print("Usage: file.py filename", file=sys.stderr)
             sys.exit(1)
         try:
             address = 0
+
             with open(sys.argv[1]) as f:
                 for line in f:
                     # Ignore comments
